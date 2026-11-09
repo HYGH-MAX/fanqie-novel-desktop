@@ -1,0 +1,58 @@
+{
+  "name": "fanqie-novel-desktop",
+  "version": "1.0.0",
+  "description": "番茄小说电脑版 · 自带标题栏、托盘、最近阅读与护眼模式的桌面客户端，内容走番茄小说官方网页版",
+  "main": "src/main.js",
+  "author": "HYGH-MAX",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HYGH-MAX/fanqie-novel-desktop.git"
+  },
+  "homepage": "https://github.com/HYGH-MAX/fanqie-novel-desktop#readme",
+  "keywords": [
+    "fanqie",
+    "novel",
+    "electron",
+    "desktop",
+    "番茄小说"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "com.fanqie.novel.desktop",
+    "productName": "番茄小说",
+    "copyright": "Copyright © 2026 fanqie-novel-desktop contributors",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "!**/*.map"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "fanqie-novel-desktop-${version}-portable.exe",
+      "requestExecutionLevel": "user"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
+  }
+}

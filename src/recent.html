@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>最近阅读 - 番茄小说</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%; margin: 0; background: #fff; color: #1f1f1f; overflow: hidden;
+    font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  }
+  .head {
+    height: 42px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 0 0 18px; border-bottom: 1px solid #eee;
+    -webkit-app-region: drag; user-select: none;
+  }
+  .head .title { font-size: 14px; font-weight: 600; }
+  .head button {
+    -webkit-app-region: no-drag; appearance: none; border: 0; background: transparent;
+    width: 42px; height: 42px; cursor: pointer; color: #666; display: grid; place-items: center;
+  }
+  .head button:hover { background: #e81123; color: #fff; }
+  .head button svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+  .list { height: calc(100% - 42px); overflow-y: auto; padding: 8px 10px 16px; }
+  .item {
+    display: flex; gap: 10px; align-items: center; padding: 10px 10px; border-radius: 10px;
+    cursor: pointer;
+  }
+  .item:hover { background: #fff6f1; }
+  .dot {
+    width: 30px; height: 30px; border-radius: 8px; flex: none; display: grid; place-items: center;
+    background: #fff1e8; color: #ff5a1f; font-size: 14px;
+  }
+  .meta { min-width: 0; flex: 1; }
+  .meta .name {
+    font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .meta .time { font-size: 11px; color: #aaa; margin-top: 3px; }
+  .empty { padding: 60px 20px; text-align: center; color: #bbb; font-size: 12.5px; line-height: 1.9; }
+  .empty .emoji { font-size: 34px; display: block; margin-bottom: 10px; }
+  .tip { padding: 6px 14px 0; font-size: 11px; color: #bbb; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <span class="title">最近阅读</span>
+    <button id="btn-close" title="关闭"><svg viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+  </div>
+  <div class="list" id="list">
+    <div class="empty"><span class="emoji">🍅</span>还没有阅读记录<br>打开一本书，这里就会留下入口</div>
+  </div>
+  <div class="tip">只记录本机打开过的书籍页面，最多 12 条</div>
+
+<script>
+  const $ = (id) => document.getElementById(id)
+
+  function formatTime(ts) {
+    const d = new Date(ts)
+    const pad = (n) => String(n).padStart(2, '0')
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes())
+  }
+
+  function render(items) {
+    const list = $('list')
+    if (!Array.isArray(items) || !items.length) {
+      list.innerHTML = '<div class="empty"><span class="emoji">🍅</span>还没有阅读记录<br>打开一本书，这里就会留下入口</div>'
+      return
+    }
+    list.innerHTML = items
+      .map(
+        (item) =>
+          '<div class="item" data-url="' + encodeURIComponent(item.url) + '">' +
+          '<div class="dot">书</div>' +
+          '<div class="meta"><div class="name">' + escapeHtml(item.title) + '</div>' +
+          '<div class="time">' + formatTime(item.at) + '</div></div>' +
+          '</div>'
+      )
+      .join('')
+
+    list.querySelectorAll('.item').forEach((el) => {
+      el.onclick = () => window.fq.openRecentItem(decodeURIComponent(el.dataset.url))
+    })
+  }
+
+  function escapeHtml(text) {
+    return String(text || '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c])
+  }
+
+  window.fq.onRecent(render)
+  window.fq.recent().then(render)
+  $('btn-close').onclick = () => window.fq.close()
+</script>
+</body>
+</html>
